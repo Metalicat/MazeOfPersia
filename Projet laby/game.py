@@ -286,6 +286,11 @@ def game():
                 focus = True
             else:
                 focus = False
+                
+            if player.y < screen.get_height()/2 + 30 and player.y > screen.get_height()/2 - 30 and focus == False:
+                focus = True
+            else : focus = False
+                
             if focus:
                 lab.rect.move_ip(round(vec.x), round(vec.y))
             else:
