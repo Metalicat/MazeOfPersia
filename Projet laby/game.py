@@ -421,8 +421,11 @@ def credits():
     loup = mediumFont.render("Loup Devernay", True, "white")
     loup_rect = loup.get_rect(center=(540,220))
 
+    paul = mediumFont.render("Paul Musial", True, "white")
+    paul_rect = paul.get_rect(center = (540,280))
+    
     zach = mediumFont.render("Zacharie Girard", True, "white")
-    zach_rect = zach.get_rect(center = (540,280))
+    zach_rect = zach.get_rect(center = (540,340))
 
     music = mediumFont.render("Soundtrack", True, (173, 129, 9))
     music_rect = music.get_rect(center=(540,450))
@@ -450,6 +453,7 @@ def credits():
         screen.fill("black")
         screen.blit(coding,coding_rect)
         screen.blit(loup,loup_rect)
+        screen.blit(paul, paul_rect)
         screen.blit(zach,zach_rect)
         screen.blit(music,music_rect)
         screen.blit(zac,zac_rect)
