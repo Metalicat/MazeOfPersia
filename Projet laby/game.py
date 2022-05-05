@@ -570,19 +570,32 @@ def assignTexture(laby: dict, ligne: int, colonne: int):
             image = pygame.image.load(getRealPath("images", "mur_O.png"))
     else:
         if colonne == 0:
-            if laby[ligne][colonne+1]==1 and ligne+1 < len(laby[0])-1: # ╠
+            if laby[ligne][colonne+1]==1 and ligne > 0 and ligne+1 < len(laby): # ╠
                 image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_T.png")), 0)
-            elif ligne+1 < len(laby[0])-1: # ║
-                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), random.randint(0,1)*180)
-            else: #Coin supérieur gauche
+            elif ligne+1 < len(laby) and ligne > 0: # ║
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 0)
+            elif laby[ligne][colonne+1]==1 and ligne == 0: #Coin supérieur gauche
                 image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 270)
-        elif colonne == len(laby[0])-1 and ligne == 0: #Coin supérieur droit
-            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 180)
-        elif colonne == 0 and ligne == len(laby)-1:
-            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 0)
-        elif colonne == len(laby[0])-1 and ligne == len(laby)-1:
-            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 90)
+            elif laby[ligne][colonne+1]==1 and ligne == len(laby)-1: #Coin inférieur gauche
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 0)
+        elif colonne == len(laby[0])-1:
+            if laby[ligne][colonne-1]==1 and ligne > 0 and ligne+1 < len(laby): # ╠
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_T.png")), 180)
+            elif ligne+1 < len(laby) and ligne > 0: # ║
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 0)
+            elif laby[ligne][colonne-1]==1 and ligne == 0: #Coin supérieur droit
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 180)
+            elif laby[ligne][colonne-1]==1 and ligne == len(laby)-1: #Coin inférieur droit
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 90)
+        elif ligne == 0:
+            if laby[ligne+1][colonne]==1 and colonne < len(laby[0])-1: # ╦
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_T.png")), 270)
+            elif colonne+1 < len(laby[0]) and colonne > 0: # ═
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 90)
         else:
-            image = pygame.image.load(getRealPath("images", "check.png"))
+            if laby[ligne-1][colonne]==1 and colonne < len(laby)-1: # ╦
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_T.png")), 90)
+            elif colonne-1 < len(laby[0]) and colonne > 0: # ═
+                image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 90)
     return pygame.transform.scale(image, (tile_size, tile_size))
 start()
