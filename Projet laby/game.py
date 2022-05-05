@@ -308,8 +308,8 @@ def game():
             # if player.y < screen.get_height()/2 and player.y > screen.get_height()/2 and focus == False:
             #     focus = True
             # else : focus = False
-            lab.rect.move_ip(round(vec.x), round(vec.y))
-            lab.move(-lab.rect.x, -lab.rect.y)
+            lab.rect.move_ip(-round(vec.x), -round(vec.y))
+            lab.move(lab.rect.x, lab.rect.y)
         
         screen.fill((66, 65, 62))
         lab.affiche(maze, player)
