@@ -36,3 +36,26 @@ def sauvegarder(niveau,chrono):
     with open('save_file.json', 'w') as file:
         # On remplace le contenu du fichier par celui de la variable
         json.dump(data, file)
+
+def switch_volume():
+      # On ouvre le fichier de save
+    f = open('save_file.json')
+    # On met le fichier contenu dans une variable (sous forme de dico)
+    data = json.load(f)
+    # On effectue les modifications souhaitées sur la variable
+    if data["general"][0] == True :
+        data["general"][0] == False
+    else : 
+        data["general"][0] = True
+    f.close
+    with open('save_file.json', 'w') as file:
+        # On remplace le contenu du fichier par celui de la variable
+        json.dump(data, file)
+
+def isvolume_on():
+    # On ouvre le fichier de save
+    f = open('save_file.json')
+    # On met le fichier contenu dans une variable (sous forme de dico)
+    data = json.load(f)
+    # On effectue les modifications souhaitées sur la variable
+    return data["general"][0] == True
