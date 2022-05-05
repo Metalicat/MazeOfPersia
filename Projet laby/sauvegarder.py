@@ -10,7 +10,7 @@ def verif_sauvegarde():
     # On regarde si la save est vide
     if taille_sauvegarde() == 0:
         # Si elle est vite on met dedans les paramettres par défaut
-        data = {"general":[100,1],"specific":[[1,0]]}
+        data = {"general":[True,1],"specific":[[1,0]]}
         with open('save_file.json', 'w') as file:
         # On remplace le contenu du fichier par celui de la variable
             json.dump(data, file)
