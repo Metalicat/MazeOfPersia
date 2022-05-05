@@ -1,4 +1,3 @@
-from pyexpat.errors import XML_ERROR_ABORTED
 from webbrowser import get
 import generation
 import resolution
@@ -8,7 +7,7 @@ import sys
 import random
 
 import pygame
-from pygame import RESIZABLE, mixer
+from pygame import mixer
 
 
 pygame.init()
@@ -19,7 +18,7 @@ def getRealPath(folderName : str, fileName : str):
 
 
 #Parametres de base de la fenetre
-screen = pygame.display.set_mode((1080, 720), RESIZABLE)
+screen = pygame.display.set_mode((1080, 720))
 pygame.display.set_caption('Deepsands Labyrinth')
 icone = pygame.image.load(getRealPath("images", "maze.png"))
 pygame.display.set_icon(icone)
@@ -159,8 +158,7 @@ class Labyrinthe():
                     screen.blit(check, (x, y))
 
                 else:
-                    
-                    screen.blit(pygame.transform.rotate(chemin, random.randint(0, 12)*90), (x, y))
+                    screen.blit(chemin, (x, y))
 
 def is_won(laby, x, y):
     if laby[y][x] == 2:
@@ -212,7 +210,7 @@ def game():
     screen.fill("black")
 
     title_font = pygame.font.Font(fantasyFont, 125)
-    title = title_font.render("Deepsands Labyrinth", True, "White")
+    title = title_font.render("Deepsands Labyrinth", True, (173, 129, 9))
     title_rect = title.get_rect(center = (540, 150))
 
     loading_message = mediumFont.render("Loading...", True, "White")
@@ -226,19 +224,22 @@ def game():
     #Creation du labyrinthe
     maze = generation.to_laby(generation.creer(50,30))
     #On prend les valeurs d'indice du joueur dans la matrice
-    #TODO Supprimer
-    x, y = get_coords(maze, 3)
+    
+    print(get_coords(maze, 3))
+    print(get_coords(maze, 3)[0]*tile_size, get_coords(maze, 3)[1]*tile_size)
     #Instanciation du joueur
-    joueur_img = pygame.transform.scale(pygame.image.load(getRealPath("images", "check.png")), (50, 50))
-    player = Player(joueur_img, x, y)
-    lab = Labyrinthe(maze, 0, 0)
+    joueur_img = pygame.transform.scale(pygame.image.load(getRealPath("images", "button.png")), (25, 25))
+    player = Player(joueur_img, 0, 0)
+    lab = Labyrinthe(maze, screen.get_width()/2-get_coords(maze, 3)[0]*tile_size, screen.get_height()/2-get_coords(maze, 3)[1]*tile_size)
+    x, y = screen.get_width()/2, screen.get_height()/2
+    fog = pygame.image.load(getRealPath("images", "fog.png"))
 
     #On affiche le labyrinthe a l'ecran
     #TODO Déplacer/Supprimer, ça ne sert à rien d'afficher avant la boucle
     screen.fill((66, 65, 62))
     lab.affiche(maze, player)
-    player.draw(x, y)
-    # pygame.display.update()
+    screen.blit(joueur_img, (x, y))
+    pygame.display.update()
 
     #Chargement et lancement de la musique
     if sound:
@@ -281,7 +282,7 @@ def game():
                             if event.type == pygame.KEYDOWN:
                                 if event.key == pygame.K_ESCAPE:
                                     waiting = False
-                    running = False #TODO A quoi ça sert?????
+                    running = False 
                     start()
                     
         pos_to_coord(player, lab)
@@ -292,106 +293,28 @@ def game():
         droite = key[pygame.K_d] or key[pygame.K_RIGHT]
         
         
-        #Tests mur a faire ici
-        coord_x, coord_y = pos_to_coord(player,lab)
-        #Droite
-        if droite and not gauche and not haut and not bas :
-            if maze[coord_y][coord_x + 1] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Gauche
-        if gauche and not droite and not haut and not bas:
-            if maze[coord_y][coord_x - 1] != 1 :
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Haut
-        if haut and not droite and not droite and not gauche :
-            if maze[coord_y-1][coord_x] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Bas
-        if bas and not haut and not droite and not gauche :
-            if maze[coord_y+1][coord_x] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Haut Droite
-        if haut and not bas and droite and not gauche:
-            if maze[coord_y-1][coord_x+1] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Haut Gauche
-        elif haut and not bas and gauche and not droite:
-            if maze[coord_y-1][coord_x-1] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)        
-        #Bas Droite
-        elif bas and not haut and droite and not gauche:
-            if maze[coord_y+1][coord_x+1] != 1:
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        #Bas Gauche
-        elif bas and not haut and gauche and not droite:
-            if maze[coord_y+1][coord_x-1] != 1 :
-                vec = pygame.math.Vector2(droite - gauche, bas - haut)
-        
-        else : vec = pygame.math.Vector2(droite - gauche, bas - haut)
         
         if is_won(maze, pos_to_coord(player, lab)[0], pos_to_coord(player, lab)[1]):
             intermission()
-        
+        vec = pygame.math.Vector2(droite - gauche, bas - haut)
         if vec.length_squared() > 0:
             vec.scale_to_length(speed)
             
-            if player.x < screen.get_width()/2 + 30 and player.x > screen.get_width()/2 - 30 and focus == False:
-                focus = True
-            else:
-                focus = False
+            # if player.x < screen.get_width()/2 and player.x > screen.get_width()/2 and focus == False:
+            #     focus = True
+            # else:
+            #     focus = False
             
-            if player.y < screen.get_height()/2 + 30 and player.y > screen.get_height()/2 - 30 and focus == False:
-                focus = True
-            else : focus = False
-            
-            if focus:
-                lab.rect.move_ip(round(vec.x), round(vec.y))
-            else:
-                player.rect.move_ip(round(vec.x), round(vec.y))
-        lab.move(-lab.rect.x, -lab.rect.y)
-        #Si dans le tableau keys on trouve une des commandes directionnelles on appelle la fonction update_matrice pour la direction correspondante    
-        """
-        if keys[pygame.K_z]:
-            #Si la fonction renvoie GG on considère qu'on a terminé le labyrinthe
-            #La fonction de jeu s'arrete et on appelle intermission() qui permet de quitter ou de lancer une nouvelle partie
-            # screen.fill((66, 65, 62))
-            move(player, "up")
-            # if update_matrice('up', maze) == "GG":
-            #     running = False
-            #     intermission()
-            # affichage(maze)       #On modifie la matrice contenant le labyrinthe 
-            # pygame.display.update()  #On actualise ensuite la fenetre
-
-        #Idem pour les 3 autres directions
-        elif keys[pygame.K_s] and keys[pygame.K_d]:
-            move(player, "down", "right")
-        elif keys[pygame.K_s]:
-            # screen.fill((66, 65, 62))
-            move(player, "down")
-            # if update_matrice('down', maze) == "GG":
-            #     running = False
-            #     intermission()
-            # affichage(maze)
-
-        elif keys[pygame.K_q]:
-            # screen.fill((66, 65, 62))
-            move(player, "left")
-            # if update_matrice('left', maze) == "GG":
-            #     running = False
-            #     intermission()
-            # affichage(maze)
-
-        elif keys[pygame.K_d]:
-            # screen.fill((66, 65, 62))
-            move(player, "right")
-            # if update_matrice('right', maze) == "GG":
-            #     running = False
-            #     intermission()
-            # affichage(maze)
-        """
+            # if player.y < screen.get_height()/2 and player.y > screen.get_height()/2 and focus == False:
+            #     focus = True
+            # else : focus = False
+            lab.rect.move_ip(round(vec.x), round(vec.y))
+            lab.move(-lab.rect.x, -lab.rect.y)
+        
         screen.fill((66, 65, 62))
         lab.affiche(maze, player)
-        player.draw(player.rect.x, player.rect.y)
+        screen.blit(joueur_img, (x, y))
+        screen.blit(fog, (0, 0))
         
         #pygame.time.wait(100) #On attend un peu avant de continuer
         pygame.display.update()
@@ -608,9 +531,9 @@ def assignTexture(laby: dict, ligne: int, colonne: int):
         elif laby[ligne-1][colonne] == 1 and laby[ligne][colonne-1] == 1: # ╝
             image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_L.png")), 90)
         elif laby[ligne+1][colonne] == 1 and laby[ligne-1][colonne] == 1: # ║
-            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), random.randint(0,1)*180)
+            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 0)
         elif laby[ligne][colonne+1] == 1 and laby[ligne][colonne-1] == 1: # ═
-            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), random.randint(0,1)*180+90)
+            image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 90)
         elif laby[ligne-1][colonne] == 1: # └─┘
             image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_U.png")), 0)
         elif laby[ligne+1][colonne] == 1: # ┌─┐
