@@ -302,7 +302,17 @@ def game():
         
         
         # if is_won(maze, pos_to_coord(player, lab)[0], pos_to_coord(player, lab)[1]):
+            #On récupère le temps d'arret
+            temps_fin = time.time()
+            # On charge la save
+            data = sauvegarder.charger_sauvegarde()
+            # On init le chrono à la valeur du chrono de la partie précédente et on lui ajoute le temps effectué
+            chrono = data["specific"][data["general"][1]-1][1] + int(temps_fin - temps_debut)
+            # On l'insère dans le fichier de save 
+            niveau = data["general"][1]
+            sauvegarder.sauvegarder(niveau,chrono)
             # intermission()
+            
         vec = pygame.math.Vector2(droite - gauche, bas - haut)
         if vec.length_squared() > 0:
             vec.scale_to_length(speed)
