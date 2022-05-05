@@ -221,9 +221,15 @@ def game():
     screen.blit(title, title_rect)
     pygame.display.update()
 
-
+    # On check l'existence de la save
+    sauvegarder.verif_sauvegarde()
+    # On initialise le temps de départ
+    temps_debut = time.time()
+    
+    data = sauvegarder.charger_sauvegarde()
+    niveau = data["general"][1]
     #Creation du labyrinthe
-    maze = generation.to_laby(generation.creer(50,30))
+    maze = generation.to_laby(generation.creer(50+int(5*niveau-15),30+int(5*niveau-15)))
     #On prend les valeurs d'indice du joueur dans la matrice
     
     print(get_coords(maze, 3))
