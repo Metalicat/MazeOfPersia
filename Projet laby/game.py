@@ -327,7 +327,7 @@ def game():
                 if vec.y < 0:
                     vec.y = 0
                 else:
-                    vec.y = vec.y-5
+                    vec.y = vec.y
             else:
                 vec.x = vec.x
             lab.rect.move_ip(-round(vec.x), -round(vec.y))
