@@ -72,9 +72,11 @@ class Labyrinthe():
         self.width = tile_size*len(laby[0])
         self.height = len(laby)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+    
     def move(self, x, y):
         self.x = x
         self.y = y
+    
     def affiche(self, laby : dict, player : Player):
         """
         Fonction affichant dans la fenetre le labyrinthe avec depart et arrivée visible
@@ -160,7 +162,14 @@ class Labyrinthe():
                     
                     screen.blit(pygame.transform.rotate(chemin, random.randint(0, 12)*90), (x, y))
 
+def is_won(laby, x, y):
+    if laby[y][x] == 2:
+        return True
+    return False
+
+
 def update_matrice(direction, maze):
+    #Est inutile actuellement
     """
     Fonction qui permet de faire deplacer le joueur dans la matrice selon une direction donnée
     """
@@ -239,7 +248,7 @@ def game():
 
     #Création de l'évènement qui revient au menu une fois la solution affichée au bout de 5 secondes
     RETURNEVENT = pygame.USEREVENT
-    speed = 5
+    speed = 20
 
     running = True
     while running:  #Boucle infinie tant que le programme tourne
@@ -274,23 +283,67 @@ def game():
                                     waiting = False
                     running = False #TODO A quoi ça sert?????
                     start()
+                    
+        pos_to_coord(player, lab)
         key = pygame.key.get_pressed()
         haut = key[pygame.K_z] or key[pygame.K_UP]
         bas = key[pygame.K_s] or key[pygame.K_DOWN]
         gauche = key[pygame.K_q] or key[pygame.K_LEFT]
         droite = key[pygame.K_d] or key[pygame.K_RIGHT]
-        vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        
+        
+        #Tests mur a faire ici
+        coord_x, coord_y = pos_to_coord(player,lab)
+        #Droite
+        if droite and not gauche and not haut and not bas :
+            if maze[coord_y][coord_x + 1] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Gauche
+        if gauche and not droite and not haut and not bas:
+            if maze[coord_y][coord_x - 1] != 1 :
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Haut
+        if haut and not droite and not droite and not gauche :
+            if maze[coord_y-1][coord_x] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Bas
+        if bas and not haut and not droite and not gauche :
+            if maze[coord_y+1][coord_x] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Haut Droite
+        if haut and not bas and droite and not gauche:
+            if maze[coord_y-1][coord_x+1] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Haut Gauche
+        elif haut and not bas and gauche and not droite:
+            if maze[coord_y-1][coord_x-1] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)        
+        #Bas Droite
+        elif bas and not haut and droite and not gauche:
+            if maze[coord_y+1][coord_x+1] != 1:
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        #Bas Gauche
+        elif bas and not haut and gauche and not droite:
+            if maze[coord_y+1][coord_x-1] != 1 :
+                vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        
+        else : vec = pygame.math.Vector2(droite - gauche, bas - haut)
+        
+        if is_won(maze, pos_to_coord(player, lab)[0], pos_to_coord(player, lab)[1]):
+            intermission()
+        
         if vec.length_squared() > 0:
             vec.scale_to_length(speed)
+            
             if player.x < screen.get_width()/2 + 30 and player.x > screen.get_width()/2 - 30 and focus == False:
                 focus = True
             else:
                 focus = False
-                
+            
             if player.y < screen.get_height()/2 + 30 and player.y > screen.get_height()/2 - 30 and focus == False:
                 focus = True
             else : focus = False
-                
+            
             if focus:
                 lab.rect.move_ip(round(vec.x), round(vec.y))
             else:
@@ -353,7 +406,7 @@ def start():
     screen.fill("black")
      
     title_font = pygame.font.Font(fantasyFont, 125) 
-    title = title_font.render("Deepsands Labyrinth", True, "White")
+    title = title_font.render("Deepsands Labyrinth", True, (173, 129, 9))
     title_rect = title.get_rect(center = (540, 150))
      
     fond_bouton = pygame.image.load(getRealPath("images", "black.png"))
@@ -426,17 +479,17 @@ def credits():
     loup = mediumFont.render("Loup Devernay", True, "white")
     loup_rect = loup.get_rect(center=(540,220))
 
-    paul = mediumFont.render("Paul Musial", True, "white")
-    paul_rect = paul.get_rect(center = (540,280))
-    
     zach = mediumFont.render("Zacharie Girard", True, "white")
-    zach_rect = zach.get_rect(center = (540,340))
+    zach_rect = zach.get_rect(center = (540,280))
+    
+    paul = mediumFont.render("Paul Musial", True, "white")
+    paul_rect = paul.get_rect(center = (540,340))
 
     music = mediumFont.render("Soundtrack", True, (173, 129, 9))
-    music_rect = music.get_rect(center=(540,450))
+    music_rect = music.get_rect(center=(540,490))
 
     zac = mediumFont.render("Zacharie Girard", True, "white")
-    zac_rect =zac.get_rect(center = (540,520))
+    zac_rect =zac.get_rect(center = (540,560))
 
 
     fond_bouton = pygame.image.load(getRealPath("images", "black.png"))
@@ -458,8 +511,8 @@ def credits():
         screen.fill("black")
         screen.blit(coding,coding_rect)
         screen.blit(loup,loup_rect)
-        screen.blit(paul, paul_rect)
         screen.blit(zach,zach_rect)
+        screen.blit(paul,paul_rect)
         screen.blit(music,music_rect)
         screen.blit(zac,zac_rect)
 
@@ -598,4 +651,17 @@ def assignTexture(laby: dict, ligne: int, colonne: int):
             elif colonne-1 < len(laby[0]) and colonne > 0: # ═
                 image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 90)
     return pygame.transform.scale(image, (tile_size, tile_size))
+
+def pos_to_coord(player, laby):
+    x_player = int(player.x + player.width / 2)
+    y_player = int(player.y + player.height / 2)
+    
+    x_laby = laby.x
+    y_laby = laby.y
+    
+    x_coord = int(abs(-x_laby + x_player) / tile_size)
+    y_coord = int(abs(-y_laby + y_player) / tile_size)
+
+    return x_coord, y_coord
+    
 start()
