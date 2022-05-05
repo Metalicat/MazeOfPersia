@@ -1,3 +1,4 @@
+from pyexpat.errors import XML_ERROR_ABORTED
 from webbrowser import get
 import generation
 import resolution
@@ -249,7 +250,7 @@ def game():
 
     #Création de l'évènement qui revient au menu une fois la solution affichée au bout de 5 secondes
     RETURNEVENT = pygame.USEREVENT
-    speed = 20
+    speed = 8
 
     running = True
     while running:  #Boucle infinie tant que le programme tourne
@@ -285,7 +286,6 @@ def game():
                     running = False 
                     start()
                     
-        pos_to_coord(player, lab)
         key = pygame.key.get_pressed()
         haut = key[pygame.K_z] or key[pygame.K_UP]
         bas = key[pygame.K_s] or key[pygame.K_DOWN]
@@ -294,8 +294,8 @@ def game():
         
         
         
-        if is_won(maze, pos_to_coord(player, lab)[0], pos_to_coord(player, lab)[1]):
-            intermission()
+        # if is_won(maze, pos_to_coord(player, lab)[0], pos_to_coord(player, lab)[1]):
+            # intermission()
         vec = pygame.math.Vector2(droite - gauche, bas - haut)
         if vec.length_squared() > 0:
             vec.scale_to_length(speed)
@@ -308,9 +308,31 @@ def game():
             # if player.y < screen.get_height()/2 and player.y > screen.get_height()/2 and focus == False:
             #     focus = True
             # else : focus = False
+            if maze[pos_to_coord(x,y,lab)[1]][pos_to_coord(x,y,lab)[0]+1] == 1:
+                if vec.x > 0:
+                    vec.x = 0
+                else:
+                    vec.x = vec.x
+            if maze[pos_to_coord(x,y,lab)[1]][pos_to_coord(x,y,lab)[0]] == 1:
+                if vec.x < 0:
+                    vec.x = 0
+                else:
+                    vec.x = vec.x
+            if maze[pos_to_coord(x,y,lab)[1]+1][pos_to_coord(x,y,lab)[0]] == 1:
+                if vec.y > 0:
+                    vec.y = 0
+                else:
+                    vec.y = vec.y
+            if maze[pos_to_coord(x,y,lab)[1]][pos_to_coord(x,y,lab)[0]] == 1:
+                if vec.y < 0:
+                    vec.y = 0
+                else:
+                    vec.y = vec.y-5
+            else:
+                vec.x = vec.x
             lab.rect.move_ip(-round(vec.x), -round(vec.y))
             lab.move(lab.rect.x, lab.rect.y)
-        
+        # print(coord_to_pos(pos_to_coord(x,y,lab)[0], pos_to_coord(x,y,lab)[1], x, y, lab), x, y)
         screen.fill((66, 65, 62))
         lab.affiche(maze, player)
         screen.blit(joueur_img, (x, y))
@@ -575,16 +597,20 @@ def assignTexture(laby: dict, ligne: int, colonne: int):
                 image = pygame.transform.rotate(pygame.image.load(getRealPath("images", "mur_I.png")), 90)
     return pygame.transform.scale(image, (tile_size, tile_size))
 
-def pos_to_coord(player, laby):
-    x_player = int(player.x + player.width / 2)
-    y_player = int(player.y + player.height / 2)
-    
+
+def pos_to_coord(x, y, laby): #laby : classe labyrinthe
     x_laby = laby.x
     y_laby = laby.y
-    
-    x_coord = int(abs(-x_laby + x_player) / tile_size)
-    y_coord = int(abs(-y_laby + y_player) / tile_size)
+
+    x_coord = int(abs(-x_laby + x) / tile_size)
+    y_coord = int(abs(-y_laby + y) / tile_size)
 
     return x_coord, y_coord
+def coord_to_pos(x_coord, y_coord,x, y, laby): #laby : classe labyrinthe
+
+    x_laby= -(x_coord*tile_size - x)
+    y_laby= -(y_coord*tile_size - y)
+
+    return x_laby, y_laby
     
 start()
