@@ -36,38 +36,3 @@ def sauvegarder(niveau,chrono):
     with open('save_file.json', 'w') as file:
         # On remplace le contenu du fichier par celui de la variable
         json.dump(data, file)
-
-
-# QUAND START :
-
-# On check l'existence de la save
-verif_sauvegarde()
-# On initialise le temps de départ
-temps_debut = time.time()
-
-
-# QUAND QUITTER
-
-#On récupère le temps d'arret
-temps_fin = time.time()
-# On charge la save
-data = charger_sauvegarde()
-# On init le chrono à la valeur du chrono de la partie précédente et on lui ajoute le temps effectué
-chrono = data["specific"][data["general"][1]-1][1] + int(temps_fin - temps_debut)
-# On l'insère dans le fichier de save 
-sauvegarder(niveau,chrono)
-
-# QUAND GG :
-
-#On récupère le temps d'arret
-temps_fin = time.time()
-# On charge la save
-data = charger_sauvegarde()
-# On init le chrono à la valeur du chrono de la partie précédente et on lui ajoute le temps effectué
-chrono = data["specific"][data["general"][1]-1][1] + int(temps_fin - temps_debut)
-# On l'insère dans le fichier de save 
-sauvegarder(niveau,chrono)
-# On créé la nouvelle save pour le futur niveau
-sauvegarder(niveau+1,0)
-
-
